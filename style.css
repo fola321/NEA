@@ -1,0 +1,32 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+  }
+    
+  /* Map styling */
+  #map {
+    width: 100%;
+    height: 100vh; /* Takes most of the screen height */
+  }
+
+  #scan-btn {
+    position: fixed;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    z-index: 1000; /* Ensure it appears above the map */
+}
+  
+  #bluetooth-devices {
+    margin: 10px auto;
+    width: 90%;
+    max-width: 600px;
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    padding: 10px;
+    font-family: monospace;
+    white-space: pre-wrap;
+  }
