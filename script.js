@@ -1,8 +1,26 @@
 let map;
 let floorplanBounds = [
-    [51.43860564348526, 0.0362003858023555], // north west coordinate
-    [51.43173557024439, 0.05014862303723368] // south east coordinate
+    [51.438705981328795, 0.03591371615733272], // north west coordinate
+    [51.429331690466604, 0.05353348902196878] // south east coordinate
 ]
+let startingMarker, destinationMarker;
+
+const dummyDescription = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse non convallis metus, in convallis sapien. Suspendisse potenti. Proin lacinia ut sapien at finibus. Nunc ligula neque, placerat sit amet iaculis eu, mattis nec libero. Ut aliquam finibus justo, a suscipit turpis lobortis sed. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Quisque congue convallis dolor, vel eleifend purus congue a. Cras ut metus sagittis eros dictum tempus fringilla eget urna.";
+
+const locations = [
+    {name: "Main Entrance", coords: [51.432379877995814, 0.04667436304914679], description: dummyDescription},
+    {name: "Cafeteria", coords: [51.432399108183006, 0.04659724953935672], description: dummyDescription},
+    {name: "Meeting Room A", coords: [51.43239576380319, 0.046648882063303115], description: dummyDescription},
+    {name: "Meeting Room B", coords: [51.432341417597186, 0.046616695554869], description: dummyDescription},
+    {name: "HR Department", coords: [51.432370680946924, 0.046660281451706864], description: dummyDescription},
+    {name: "IT Department", coords: [51.43235563122656, 0.04668173912399628], description: dummyDescription},
+    {name: "Building A", coords: [51.43239241942315, 0.046703867348544724], description: dummyDescription},
+    {name: "Building B", coords: [51.432345598076864, 0.04671996060276178], description: dummyDescription},
+    {name: "school", coords: [51.43804158166343, 0.038594470142922374], description: dummyDescription},
+    {name: "Fola's Room", coords: [51.438097979079934, 0.03815632784890242], description: dummyDescription},
+    {name: "Mum's Room", coords: [51.43824426272062, 0.039013525415493154], description: dummyDescription}
+];
+
 
 function initialiseMap() {  // create map with initial settings
     const map = L.map("map", {
@@ -23,7 +41,7 @@ function initialiseMap() {  // create map with initial settings
     return map;
 }
 
-function recentreMap(map, lat, lng, locationName) {
+function recentreMap(map, lat, lng) {
     // Center the map on the provided coordinates
     map.setView([lat, lng], 19);
 }
@@ -71,7 +89,7 @@ function loadWebsite() {
 document.addEventListener("DOMContentLoaded", () => {
     loadWebsite();
     const button = document.getElementById("scan-btn");
-    button.addEventListener("click", scanBluetoothDevices); // add event listener to the scan button
+    button.addEventListener("click", showUserLocation); // add event listener to the scan button
 
     const searchBarContainer = document.getElementById("search-bar-container");
     const suggestionsList = document.createElement("div");
@@ -92,23 +110,7 @@ document.addEventListener("DOMContentLoaded", () => {
     suggestionsList.style.marginTop = "10px";
     suggestionsList.style.display = "none";
     suggestionsList.style.left = "12%";
-    
-    
-    const dummyDescription = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse non convallis metus, in convallis sapien. Suspendisse potenti. Proin lacinia ut sapien at finibus. Nunc ligula neque, placerat sit amet iaculis eu, mattis nec libero. Ut aliquam finibus justo, a suscipit turpis lobortis sed. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Quisque congue convallis dolor, vel eleifend purus congue a. Cras ut metus sagittis eros dictum tempus fringilla eget urna.";
-
-    const locations = [
-        {name: "Main Entrance", coords: [51.432379877995814, 0.04667436304914679], description: dummyDescription},
-        {name: "Cafeteria", coords: [51.432399108183006, 0.04659724953935672], description: dummyDescription},
-        {name: "Meeting Room A", coords: [51.43239576380319, 0.046648882063303115], description: dummyDescription},
-        {name: "Meeting Room B", coords: [51.432341417597186, 0.046616695554869], description: dummyDescription},
-        {name: "HR Department", coords: [51.432370680946924, 0.046660281451706864], description: dummyDescription},
-        {name: "IT Department", coords: [51.43235563122656, 0.04668173912399628], description: dummyDescription},
-        {name: "Building A", coords: [51.43239241942315, 0.046703867348544724], description: dummyDescription},
-        {name: "Building B", coords: [51.432345598076864, 0.04671996060276178], description: dummyDescription},
-        {name: "school", coords: [51.43804158166343, 0.038594470142922374], description: dummyDescription}
-
-    ];
-    
+        
     let recentSearchesData = []; // Initially empty
     
     function updateRecentSearches() {
@@ -124,7 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
             searchItem.addEventListener("click", () => {
                 searchInput.value = search;
                 closeSearchBar();
-                scanBluetoothDevices(); // Run Bluetooth scan when location is pressed
+                showUserLocation(); // Run Bluetooth scan when location is pressed
             });
             recentSearchesList.appendChild(searchItem);
         });
@@ -157,14 +159,19 @@ document.addEventListener("DOMContentLoaded", () => {
                 suggestionsList.style.display = "none"; // Hide suggestions
     
                 // Recenter the map
-                recentreMap(map, loc.coords[0], loc.coords[1], loc.name);
+                recentreMap(map, loc.coords[0], loc.coords[1]);
+                if (startingMarker) {
+                    map.removeLayer(startingMarker);
+                }
+                startingMarker = L.marker([loc.coords[0], loc.coords[1]]).addTo(map);
     
                 // Trigger the bottom sheet
                 showLocationInfo(loc.name, loc.description);
     
                 // Ensure bottom sheet is visible
                 locationInfo.classList.add("open");
-            });            suggestionItem.addEventListener("mouseenter", () => {
+            });            
+            suggestionItem.addEventListener("mouseenter", () => {
                 suggestionItem.style.background = "#f9f9f9";
             });
             suggestionItem.addEventListener("mouseleave", () => {
@@ -311,7 +318,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const directionsBtn = document.getElementById("directions-btn");
 
     directionsBtn.addEventListener("click", (e) => {
-
         let originalStyles = {
             top: searchBarContainer.style.top,
             backgroundColor: searchBarContainer.style.backgroundColor,
@@ -333,97 +339,96 @@ document.addEventListener("DOMContentLoaded", () => {
             `;
             searchBarContainer.prepend(startLocationBar);
 
-                    // Create suggestions list for the starting location
-        const startSuggestionsList = document.createElement("div");
-        startSuggestionsList.setAttribute("id", "start-suggestions-list");
-        
-        startSuggestionsList.style.position = "absolute";
-        startSuggestionsList.style.background = "#fff";
-        startSuggestionsList.style.border = "1px solid #ddd";
-        startSuggestionsList.style.borderRadius = "4px";
-        startSuggestionsList.style.boxShadow = "0 2px 5px rgba(0, 0, 0, 0.2)";
-        startSuggestionsList.style.zIndex = "1000";
-        startSuggestionsList.style.width = "77%";
-        startSuggestionsList.style.marginTop = "10px";
-        startSuggestionsList.style.display = "none";
-        startSuggestionsList.style.top = "95%"; // Position immediately below the bar
-        startSuggestionsList.style.left = "12%"; // Align with the left edge of the bar
-
-
+            // Create suggestions list for the starting location
+            const startSuggestionsList = document.createElement("div");
+            startSuggestionsList.setAttribute("id", "start-suggestions-list");
             
-        startLocationBar.appendChild(startSuggestionsList);
+            startSuggestionsList.style.position = "absolute";
+            startSuggestionsList.style.background = "#fff";
+            startSuggestionsList.style.border = "1px solid #ddd";
+            startSuggestionsList.style.borderRadius = "4px";
+            startSuggestionsList.style.boxShadow = "0 2px 5px rgba(0, 0, 0, 0.2)";
+            startSuggestionsList.style.zIndex = "1000";
+            startSuggestionsList.style.width = "77%";
+            startSuggestionsList.style.marginTop = "10px";
+            startSuggestionsList.style.display = "none";
+            startSuggestionsList.style.top = "95%"; // Position immediately below the bar
+            startSuggestionsList.style.left = "12%"; // Align with the left edge of the bar
 
-        // Add event listeners for the starting location input
-        const startLocationInput = document.getElementById("start-location-input");
+            startLocationBar.appendChild(startSuggestionsList);
 
-        function showStartSuggestions(input) {
-            startSuggestionsList.innerHTML = ""; // Clear previous suggestions
-        
-            // Add "Your Location" as the first suggestion
-            const yourLocationItem = document.createElement("div");
-            yourLocationItem.textContent = "Your Location";
-            yourLocationItem.style.padding = "10px";
-            yourLocationItem.style.cursor = "pointer";
-            yourLocationItem.style.borderBottom = "1px solid #ddd";
-            yourLocationItem.addEventListener("click", () => {
-                startLocationInput.value = "Your Location";
-                startSuggestionsList.style.display = "none"; // Hide suggestions
-                // Trigger your location-specific functionality
-                console.log("Your Location selected");
-            });
-            yourLocationItem.addEventListener("mouseenter", () => {
-                yourLocationItem.style.background = "#f9f9f9";
-            });
-            yourLocationItem.addEventListener("mouseleave", () => {
-                yourLocationItem.style.background = "#fff";
-            });
-            startSuggestionsList.appendChild(yourLocationItem);
-        
-            // Add matching locations below "Your Location"
-            if (input) {
-                const matchingLocations = locations.filter((loc) =>
-                    loc.name.toLowerCase().includes(input.toLowerCase())
-                );
-        
-                matchingLocations.forEach((loc) => {
-                    const suggestionItem = document.createElement("div");
-                    suggestionItem.textContent = loc.name;
-                    suggestionItem.style.padding = "10px";
-                    suggestionItem.style.cursor = "pointer";
-                    suggestionItem.style.borderBottom = "1px solid #ddd";
-                    suggestionItem.addEventListener("click", () => {
-                        startLocationInput.value = loc.name;
-                        startSuggestionsList.style.display = "none"; // Hide suggestions
-                        // Optionally recenter the map for this location
-                        recentreMap(map, loc.coords[0], loc.coords[1], loc.name);
-                    });
-                    suggestionItem.addEventListener("mouseenter", () => {
-                        suggestionItem.style.background = "#f9f9f9";
-                    });
-                    suggestionItem.addEventListener("mouseleave", () => {
-                        suggestionItem.style.background = "#fff";
-                    });
-                    startSuggestionsList.appendChild(suggestionItem);
+            // Add event listeners for the starting location input
+            const startLocationInput = document.getElementById("start-location-input");
+
+            function showStartSuggestions(input) {
+                startSuggestionsList.innerHTML = ""; // Clear previous suggestions
+            
+                // Add "Your Location" as the first suggestion
+                const yourLocationItem = document.createElement("div");
+                yourLocationItem.textContent = "Your Location";
+                yourLocationItem.style.padding = "10px";
+                yourLocationItem.style.cursor = "pointer";
+                yourLocationItem.style.borderBottom = "1px solid #ddd";
+                yourLocationItem.addEventListener("click", () => {
+                    startLocationInput.value = "Your Location";
+                    startSuggestionsList.style.display = "none"; // Hide suggestions
+                    // Trigger your location-specific functionality
+                    showUserLocation();
+                    console.log("Your Location selected");
                 });
+                yourLocationItem.addEventListener("mouseenter", () => {
+                    yourLocationItem.style.background = "#f9f9f9";
+                });
+                yourLocationItem.addEventListener("mouseleave", () => {
+                    yourLocationItem.style.background = "#fff";
+                });
+                startSuggestionsList.appendChild(yourLocationItem);
+            
+                // Add matching locations below "Your Location"
+                if (input) {
+                    const matchingLocations = locations.filter((loc) =>
+                        loc.name.toLowerCase().includes(input.toLowerCase())
+                    );
+            
+                    matchingLocations.forEach((loc) => {
+                        const suggestionItem = document.createElement("div");
+                        suggestionItem.textContent = loc.name;
+                        suggestionItem.style.padding = "10px";
+                        suggestionItem.style.cursor = "pointer";
+                        suggestionItem.style.borderBottom = "1px solid #ddd";
+                        suggestionItem.addEventListener("click", () => {
+                            startLocationInput.value = loc.name;
+                            startSuggestionsList.style.display = "none"; // Hide suggestions
+                            // Optionally recenter the map for this location
+                            recentreMap(map, loc.coords[0], loc.coords[1]);
+                        });
+                        suggestionItem.addEventListener("mouseenter", () => {
+                            suggestionItem.style.background = "#f9f9f9";
+                        });
+                        suggestionItem.addEventListener("mouseleave", () => {
+                            suggestionItem.style.background = "#fff";
+                        });
+                        startSuggestionsList.appendChild(suggestionItem);
+                    });
+                }
+                startSuggestionsList.style.display = "block"; // Show suggestions
             }
-            startSuggestionsList.style.display = "block"; // Show suggestions
-        }
+            
+            startLocationInput.addEventListener("click", () => {
+                // Show "Your Location" and suggestions when the input is clicked
+                showStartSuggestions(""); // Pass an empty string to show only "Your Location"
+            });
+            
+            startLocationInput.addEventListener("input", (e) => {
+                const inputValue = e.target.value.trim();
+                showStartSuggestions(inputValue); // Show "Your Location" and matching suggestions
+            });
         
-        startLocationInput.addEventListener("click", () => {
-            // Show "Your Location" and suggestions when the input is clicked
-            showStartSuggestions(""); // Pass an empty string to show only "Your Location"
-        });
-        
-        startLocationInput.addEventListener("input", (e) => {
-            const inputValue = e.target.value.trim();
-            showStartSuggestions(inputValue); // Show "Your Location" and matching suggestions
-        });
-        
-        startLocationInput.addEventListener("blur", () => {
-            setTimeout(() => {
-                startSuggestionsList.style.display = "none"; // Hide suggestions when input loses focus
-            }, 200); // Small timeout to allow click events to register
-        });
+            startLocationInput.addEventListener("blur", () => {
+                setTimeout(() => {
+                    startSuggestionsList.style.display = "none"; // Hide suggestions when input loses focus
+                }, 200); // Small timeout to allow click events to register
+            });
 
             // Adjust search bar container styles
             searchBarContainer.style.padding = "10px";
@@ -503,7 +508,7 @@ function handleAdvertisement(event) { // this handler is run every single time a
     rssiValuesByDevice.set(deviceName, deviceData)
 }
 
-async function scanBluetoothDevices() { // handler is run when scan bluetooth devices button is pressed
+async function showUserLocation() { // handler is run when scan bluetooth devices button is pressed
     try {
         rssiValuesByDevice.clear(); // clear all RSSI data at the start of the scan
         navigator.bluetooth.removeEventListener("advertisementreceived", handleAdvertisement); // remove old listener
@@ -531,6 +536,15 @@ async function scanBluetoothDevices() { // handler is run when scan bluetooth de
             const nearestBeaconData = rssiValuesByDevice.get(nearestBeacon); // object with rssi array and distance properties
             const nearestBeaconDistance = nearestBeaconData ? nearestBeaconData.distance : null;          
             console.log(`The nearest beacon is ${nearestBeacon} with a distance of ${nearestBeaconDistance} meters.`);
+
+            const nearestLocation = locations.find(loc => loc.name === nearestBeacon.slice(11)); //extracts the location by getting rid of nea_beacon
+            recentreMap(map, nearestLocation.coords[0], nearestLocation.coords[1]);
+            if (destinationMarker) {
+                map.removeLayer(destinationMarker);
+            }
+            destinationMarker = L.marker([nearestLocation.coords[0], nearestLocation.coords[1]]).addTo(map);
+
+
         }, 1000); // stop scanning after x milliseconds
     } catch (error) {
         console.error("Error scanning Bluetooth devices:", error);
