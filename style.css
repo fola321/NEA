@@ -19,6 +19,240 @@ body {
     z-index: 1000; /* ensure it appears above the map */
 }
 
+/* Styling for the Search Bar Container */
+#search-bar-container {
+  position: fixed;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex; /* Align items in a row */
+  align-items: flex-start; /* Align back button with the top of search bars */
+  gap: 10px; /* Space between back button and search bars */
+  z-index: 1000;
+  width: 90%;
+  max-width: 600px;
+}
+
+#suggestions-list {
+  position: absolute; /* Position relative to the #search-bar-container */
+  top: 100%; /* Place it directly below the search bar */
+  left: 0;
+  width: 100%; /* Match the width of the container */
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 999; /* Ensure it appears above the map and other elements */
+  max-height: 200px; /* Limit height with scrolling */
+  overflow-y: auto;
+  display: none; /* Initially hidden */
+}
+
+
+/* Shared Styling for Search Bars */
+.search-bar {
+  background: #fff;
+  border-radius: 50px; /* Oblong shape */
+  border: 1px solid #ccc;
+  padding: 10px 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  display: flex; /* Ensure it stays as a flex container */
+  align-items: center;
+  transition: all 0.3s ease;
+  z-index: 1001; /* Ensure it appears above the suggestions */
+  width: 65%;
+  margin: 0 auto;
+}
+
+.search-bar input {
+  width: 100%;
+  border: none;
+  outline: none;
+  font-size: 16px;
+}
+
+/* Recent searches dropdown */
+#recent-searches {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  margin-top: 10px;
+  padding: 10px;
+  display: none;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+#recent-searches h3 {
+  margin: 0 0 10px 0;
+  font-size: 16px;
+}
+
+#recent-searches div {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  cursor: pointer;
+}
+
+#recent-searches div:hover {
+  background: #f9f9f9;
+}
+
+/* Show recent searches when expanded */
+#search-bar-container.expanded #recent-searches {
+  display: block;
+}
+
+#suggestions-list div {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  cursor: pointer;
+}
+
+#suggestions-list div:hover {
+  background: #f0f0f0;
+}
+
+.bottom-sheet {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100px;
+  background-color: white;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.3s ease-in-out, height 0.3s ease-in-out;
+  transform: translateY(100%); /* Hidden by default */
+  z-index: 1000;
+}
+
+.bottom-sheet.open {
+  transform: translateY(0) !important; /* Visible state */
+}
+
+.bottom-sheet.expanded {
+  height: 70%; /* Adjust the height for expanded state */
+}
+
+.bottom-sheet.dragging {
+  transition: none; /* Disable transition during drag for smooth resizing */
+}
+
+#location-info {
+  cursor: grab;
+}
+#location-info.dragging {
+  cursor: grabbing;
+}
+
+
+.sheet-header {
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.drag-handle {
+  width: 40px;
+  height: 5px;
+  background-color: #ccc;
+  border-radius: 2.5px;
+  margin: 0 auto 0px;
+  z-index: 1001;
+}
+
+.sheet-content {
+  padding: 15px;
+  padding-top: 0px;
+  overflow-y: hidden;
+  height: calc(100% - 50px); /* Account for header height */
+}
+ 
+#location-name {
+  margin-top: 0px;
+}
+
+.directions-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px; /* Space between text and arrow */
+  background-color: #4285f4; /* Google Maps-like blue */
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 24px; /* Oblong shape */
+  padding: 5px 12px;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  position: relative; /* Allow for precise positioning */
+  top: -10px; /* Adjust based on placement within the bottom sheet */
+}
+
+.directions-btn .arrow {
+  font-size: 18px;
+}
+
+.directions-btn:hover {
+  background-color: #357ae8; /* Slightly darker blue on hover */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.directions-btn:active {
+  background-color: #2b6ad3; /* Even darker blue when pressed */
+  box-shadow: none; /* Remove shadow on press */
+}
+
+#location-description {
+  display: block;
+  background-color: #f1f3f4; /* Light grey background */
+  color: #333; /* Dark text for readability */
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: normal; /* Keep it readable */
+  border-radius: 24px; /* Oblong shape */
+  padding: 10px 20px; /* Inner spacing */
+  margin: 10px 0; /* Space above and below */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  text-align: left; /* Center-align the text */
+}
+
+#start-location-bar input {
+  width: 100%;
+  border: none;
+  outline: none;
+  font-size: 16px;
+}
+
+#back-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background-color: white;
+  border-radius: 50%;
+  cursor: pointer;
+  position: absolute;
+  left: 7px; /* Adjust this to control spacing from the left */
+  top: 3.5%;
+  transform: translateY(-50%);
+  z-index: 1001; /* Ensure it appears above other elements */
+}
+
+#back-btn::before {
+  content: "←"; /* Left arrow symbol */
+  font-size: 33px;
+  color: black;
+}
+
 /*
 #bluetooth-devices {
   position: fixed;
