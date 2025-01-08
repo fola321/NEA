@@ -24,7 +24,7 @@ const locations = [
 
 function initialiseMap() {  // create map with initial settings
     const map = L.map("map", {
-        center: [51.43237874530258, 0.04667906264817554],
+        center: [51.43804158166343, 0.038594470142922374],
         zoom: 19,
         maxBounds: [floorplanBounds],
         maxBoundsViscosity: 1.0,
@@ -46,45 +46,45 @@ function recentreMap(map, lat, lng) {
     map.setView([lat, lng], 19);
 }
 
+    function overlayFloorplan(map) {
+        fetch("/floorplan.svg")
+            .then(response => response.text())
+            .then(svgText => {
+                // Create a DOM element for the SVG
+                const svgContainer = document.createElement('div');
+                svgContainer.innerHTML = svgText;
 
-// function overlayFloorplan(map) {
-//     fetch("/floorplan.svg")
-//         .then(response => response.text())
-//         .then(svgText => {
-//             // Create a DOM element for the SVG
-//             const svgContainer = document.createElement('div');
-//             svgContainer.innerHTML = svgText;
+                const svgElement = svgContainer.querySelector('svg');
+                svgElement.style.position = 'absolute';
 
-//             const svgElement = svgContainer.querySelector('svg');
-//             svgElement.style.position = 'absolute';
+                // Convert floorplan bounds to LatLngBounds
+                const overlayBounds = L.latLngBounds(floorplanBounds);
 
-//             // Convert floorplan bounds to LatLngBounds
-//             const overlayBounds = L.latLngBounds(floorplanBounds);
+                // Calculate corners of the bounds in layer coordinates
+                const topLeft = map.latLngToLayerPoint(overlayBounds.getNorthWest());
+                const bottomRight = map.latLngToLayerPoint(overlayBounds.getSouthEast());
 
-//             // Calculate corners of the bounds in layer coordinates
-//             const topLeft = map.latLngToLayerPoint(overlayBounds.getNorthWest());
-//             const bottomRight = map.latLngToLayerPoint(overlayBounds.getSouthEast());
+                // Set the size and position of the SVG
+                svgElement.style.left = `${topLeft.x}px`;
+                svgElement.style.top = `${topLeft.y}px`;
+                svgElement.style.width = `${bottomRight.x - topLeft.x}px`;
+                svgElement.style.height = `${bottomRight.y - topLeft.y}px`;
 
-//             // Set the size and position of the SVG
-//             svgElement.style.left = `${topLeft.x}px`;
-//             svgElement.style.top = `${topLeft.y}px`;
-//             svgElement.style.width = `${bottomRight.x - topLeft.x}px`;
-//             svgElement.style.height = `${bottomRight.y - topLeft.y}px`;
+                // Append the SVG to the map's overlay pane
+                const pane = map.getPane('overlayPane');
+                pane.appendChild(svgElement);
 
-//             // Append the SVG to the map's overlay pane
-//             const pane = map.getPane('overlayPane');
-//             pane.appendChild(svgElement);
-
-//             // Apply rotation if needed
-//             svgElement.style.transformOrigin = 'center center';
-//             svgElement.style.transform = 'rotate(-12deg)'; // Adjust rotation angle
-//         })
-//         .catch(error => console.error("Error loading SVG:", error));
-// }
-  
-function loadWebsite() {
-    map = initialiseMap();   
-}
+                // Apply rotation if needed
+                svgElement.style.transformOrigin = 'center center';
+                svgElement.style.transform = 'rotate(-12deg)'; // Adjust rotation angle
+            })
+            .catch(error => console.error("Error loading SVG:", error));
+    }
+    
+    function loadWebsite() {
+        map = initialiseMap();
+        overlayFloorplan(map);
+    }
 
 document.addEventListener("DOMContentLoaded", () => {
     loadWebsite();
