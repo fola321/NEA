@@ -9,11 +9,17 @@
 </head>
 <body>
   <div id="map"></div>
-  <button id="scan-btn">Scan for Bluetooth Devices</button>
+  <!-- <button id="scan-btn">Scan for Bluetooth Devices</button> -->
+
+  <div id="floorplan-buttons">
+    <button id="ground-floor-btn" data-floor="G">G</button>
+    <button id="first-floor-btn" data-floor="1">1</button>
+    <button id="second-floor-btn" data-floor="2">2</button>
+  </div>
+  
 
   <!-- Search Bars Container -->
   <div id="search-bar-container">
-    <!-- Start Location Bar (Dynamically Inserted via JavaScript) -->
     <!-- Search for Location Bar -->
     <div id="search-bar" class="search-bar">
       <input type="text" id="search-input" placeholder="Search for a location..." readonly />

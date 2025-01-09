@@ -5,7 +5,7 @@ body {
     
   #map {
     width: 100%; 
-    height: 100vh; /* takes most of the screen height */
+    height: 100vh; 
   }
 
   #scan-btn {
@@ -16,50 +16,48 @@ body {
     padding: 10px 20px;
     font-size: 16px;
     cursor: pointer;
-    z-index: 1000; /* ensure it appears above the map */
+    z-index: 1000; 
 }
 
-/* Styling for the Search Bar Container */
 #search-bar-container {
   position: fixed;
   top: 10px;
   left: 50%;
   transform: translateX(-50%);
-  display: flex; /* Align items in a row */
-  align-items: flex-start; /* Align back button with the top of search bars */
-  gap: 10px; /* Space between back button and search bars */
+  display: flex; 
+  align-items: flex-start; 
+  gap: 10px; 
   z-index: 1000;
   width: 90%;
   max-width: 600px;
 }
 
 #suggestions-list {
-  position: absolute; /* Position relative to the #search-bar-container */
-  top: 100%; /* Place it directly below the search bar */
+  position: absolute;
+    top: 100%; 
   left: 0;
-  width: 100%; /* Match the width of the container */
+  width: 100%; 
   background: #fff;
   border: 1px solid #ddd;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  z-index: 999; /* Ensure it appears above the map and other elements */
-  max-height: 200px; /* Limit height with scrolling */
+  z-index: 999; 
+  max-height: 200px;
   overflow-y: auto;
-  display: none; /* Initially hidden */
+  display: none; 
 }
 
 
-/* Shared Styling for Search Bars */
 .search-bar {
   background: #fff;
-  border-radius: 50px; /* Oblong shape */
+  border-radius: 50px; 
   border: 1px solid #ccc;
   padding: 10px 20px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  display: flex; /* Ensure it stays as a flex container */
+  display: flex; 
   align-items: center;
   transition: all 0.3s ease;
-  z-index: 1001; /* Ensure it appears above the suggestions */
+  z-index: 1001; 
   width: 65%;
   margin: 0 auto;
 }
@@ -71,7 +69,6 @@ body {
   font-size: 16px;
 }
 
-/* Recent searches dropdown */
 #recent-searches {
   background: #fff;
   border-radius: 8px;
@@ -125,25 +122,26 @@ body {
   border-top-right-radius: 12px;
   overflow: hidden;
   transition: transform 0.3s ease-in-out, height 0.3s ease-in-out;
-  transform: translateY(100%); /* Hidden by default */
+  transform: translateY(100%); /* hidden by default */
   z-index: 1000;
 }
 
 .bottom-sheet.open {
-  transform: translateY(0) !important; /* Visible state */
+  transform: translateY(0) !important; 
 }
 
 .bottom-sheet.expanded {
-  height: 70%; /* Adjust the height for expanded state */
+  height: 70%;
 }
 
 .bottom-sheet.dragging {
-  transition: none; /* Disable transition during drag for smooth resizing */
+  transition: none; 
 }
 
 #location-info {
   cursor: grab;
 }
+
 #location-info.dragging {
   cursor: grabbing;
 }
@@ -170,7 +168,7 @@ body {
   padding: 15px;
   padding-top: 0px;
   overflow-y: hidden;
-  height: calc(100% - 50px); /* Account for header height */
+  height: calc(100% - 50px); 
 }
  
 #location-name {
@@ -181,19 +179,19 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px; /* Space between text and arrow */
-  background-color: #4285f4; /* Google Maps-like blue */
+  gap: 8px; 
+  background-color: #4285f4;
   color: white;
   font-size: 16px;
   font-weight: bold;
   border: none;
-  border-radius: 24px; /* Oblong shape */
+  border-radius: 24px; 
   padding: 5px 12px;
   cursor: pointer;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
-  position: relative; /* Allow for precise positioning */
-  top: -10px; /* Adjust based on placement within the bottom sheet */
+  position: relative; 
+  top: -10px; 
 }
 
 .directions-btn .arrow {
@@ -201,27 +199,27 @@ body {
 }
 
 .directions-btn:hover {
-  background-color: #357ae8; /* Slightly darker blue on hover */
+  background-color: #357ae8; 
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
 .directions-btn:active {
-  background-color: #2b6ad3; /* Even darker blue when pressed */
-  box-shadow: none; /* Remove shadow on press */
+  background-color: #2b6ad3;
+  box-shadow: none; 
 }
 
 #location-description {
   display: block;
-  background-color: #f1f3f4; /* Light grey background */
-  color: #333; /* Dark text for readability */
+  background-color: #f1f3f4; 
+  color: #333; 
   font-size: 14px;
   line-height: 1.5;
-  font-weight: normal; /* Keep it readable */
-  border-radius: 24px; /* Oblong shape */
-  padding: 10px 20px; /* Inner spacing */
-  margin: 10px 0; /* Space above and below */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-  text-align: left; /* Center-align the text */
+  font-weight: normal; 
+  border-radius: 24px; 
+  padding: 10px 20px; 
+  margin: 10px 0; 
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  text-align: left;
 }
 
 #start-location-bar input {
@@ -241,10 +239,10 @@ body {
   border-radius: 50%;
   cursor: pointer;
   position: absolute;
-  left: 7px; /* Adjust this to control spacing from the left */
+  left: 7px; 
   top: 3.5%;
   transform: translateY(-50%);
-  z-index: 1001; /* Ensure it appears above other elements */
+  z-index: 1001; /* ensure it appears above other elements */
 }
 
 #back-btn::before {
@@ -252,6 +250,50 @@ body {
   font-size: 33px;
   color: black;
 }
+
+#floorplan-buttons {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  z-index: 1000; /* Ensure they appear above the map */
+}
+
+#floorplan-buttons {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column; /* Stack buttons vertically */
+  gap: 10px; /* Space between buttons */
+  z-index: 1000; /* Ensure they appear above the map */
+}
+
+#floorplan-buttons button {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background-color: #4285f4; /* Google Maps-like blue */
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+#floorplan-buttons button:hover {
+  background-color: #357ae8; /* Slightly darker blue on hover */
+}
+
+#floorplan-buttons button:active {
+  background-color: #2b6ad3; /* Even darker blue when pressed */
+  box-shadow: none; /* Remove shadow on press */
+}
+
 
 /*
 #bluetooth-devices {
